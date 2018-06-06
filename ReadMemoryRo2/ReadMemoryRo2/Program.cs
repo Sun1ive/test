@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 
 namespace ReadMemoryRo2
 {
@@ -30,35 +31,61 @@ namespace ReadMemoryRo2
             PROCESS_QUERY_LIMITED_INFORMATION = (0x1000)
         }
 
-
-
-        //const int PROCESS_WM_READ = 0x0010;
-        //const int PROCESS_VM_OPERATION = 0x0008;
-
+        const int Silence = 0x00E6A85C;
 
         static void Main(string[] args)
         {
             ProcessAccessType access = ProcessAccessType.PROCESS_QUERY_INFORMATION | ProcessAccessType.PROCESS_VM_READ | ProcessAccessType.PROCESS_VM_WRITE | ProcessAccessType.PROCESS_VM_OPERATION;
             Process process = Process.GetProcessesByName("revoexe").ToList().FirstOrDefault();
             Console.WriteLine(process);
-            IntPtr processHandle = OpenProcess((int)access, true, process.Id);
+            if (process == null)
+            {
+                Console.WriteLine("Error");
+                throw new Exception("Error has occured, looks like there no procces with this name");
+            }
+
+
+            IntPtr processHandle = OpenProcess((int)access, false, process.Id);
             Console.WriteLine(processHandle);
 
+            const int MaxHpAddress = 0x00E6E838;
+            const int CurHpAddress = 0x00E6E834;
+            const int MaxSpAddress = 0x00E6E840;
+            const int CurSpAddress = 0x00E6E83C;
+
             int bytesRead = 0;
-            byte[] buffer = new byte[4];
+
+            byte[] bufferCurHp = new byte[4];
+            byte[] bufferMaxHp = new byte[4];
+            byte[] bufferCurSp = new byte[4];
+            byte[] bufferMaxSp = new byte[4];
 
             //ReadProcessMemory((int)processHandle, 0x00E6E834, buffer, buffer.Length, ref bytesRead);
-            ReadProcessMemory((int)processHandle, 0xE6E834, buffer, buffer.Length, ref bytesRead);
+            //bool isSuccess = ReadProcessMemory((int)processHandle, HP, buffer, buffer.Length, ref bytesRead);
+            ReadProcessMemory((int)processHandle, MaxHpAddress, bufferMaxHp, bufferMaxHp.Length, ref bytesRead);
+            ReadProcessMemory((int)processHandle, CurHpAddress, bufferCurHp, bufferCurHp.Length, ref bytesRead);
+            ReadProcessMemory((int)processHandle, MaxSpAddress, bufferMaxSp, bufferMaxSp.Length, ref bytesRead);
+            ReadProcessMemory((int)processHandle, CurSpAddress, bufferCurSp, bufferCurSp.Length, ref bytesRead);
+
+            int CurHpValue = 0;
+            int MaxHpValue = 0;
+            int MaxSpValue = 0;
+            int CurSpValue = 0;
+
+            MaxHpValue = BitConverter.ToInt32(bufferMaxHp, 0);
+            CurHpValue = BitConverter.ToInt32(bufferCurHp, 0);
+            CurSpValue = BitConverter.ToInt32(bufferCurSp, 0);
+            MaxSpValue = BitConverter.ToInt32(bufferMaxSp, 0);
+
+            Console.WriteLine("Cur Hp int: {0}", CurHpValue);
+            Console.WriteLine("Max Hp int: {0}", MaxHpValue);
+            Console.WriteLine("Cur Sp int: {0}", CurSpValue);
+            Console.WriteLine("Max Sp int: {0}", MaxSpValue);
+
 
             Console.WriteLine(bytesRead.ToString() + " bytes");
-            //foreach (var value in buffer) {
-            //   Console.WriteLine(value, value.GetType().Name);
-            //}
-            Console.WriteLine(System.Text.Encoding.ASCII.GetString(buffer));
-            Console.WriteLine(System.Text.Encoding.BigEndianUnicode.GetString(buffer));
-            Console.WriteLine(System.Text.Encoding.UTF32.GetString(buffer));
-            Console.WriteLine(System.Text.Encoding.UTF7.GetString(buffer));
-            Console.WriteLine(System.Text.Encoding.UTF8.GetString(buffer));
+
+
             Console.ReadLine();
         }
     }
