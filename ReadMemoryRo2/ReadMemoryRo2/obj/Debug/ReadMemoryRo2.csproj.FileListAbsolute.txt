@@ -12,3 +12,10 @@ F:\work\NATIVE\C#\test\ReadMemoryRo2\ReadMemoryRo2\obj\Debug\ReadMemoryRo2.cspro
 F:\work\NATIVE\C#\test\ReadMemoryRo2\ReadMemoryRo2\obj\Debug\ReadMemoryRo2.csproj.CoreCompileInputs.cache
 F:\work\NATIVE\C#\test\ReadMemoryRo2\ReadMemoryRo2\obj\Debug\ReadMemoryRo2.exe
 F:\work\NATIVE\C#\test\ReadMemoryRo2\ReadMemoryRo2\obj\Debug\ReadMemoryRo2.pdb
+D:\Native\test\ReadMemoryRo2\ReadMemoryRo2\bin\Debug\ReadMemoryRo2.exe.config
+D:\Native\test\ReadMemoryRo2\ReadMemoryRo2\bin\Debug\ReadMemoryRo2.exe
+D:\Native\test\ReadMemoryRo2\ReadMemoryRo2\bin\Debug\ReadMemoryRo2.pdb
+D:\Native\test\ReadMemoryRo2\ReadMemoryRo2\obj\Debug\ReadMemoryRo2.csprojAssemblyReference.cache
+D:\Native\test\ReadMemoryRo2\ReadMemoryRo2\obj\Debug\ReadMemoryRo2.csproj.CoreCompileInputs.cache
+D:\Native\test\ReadMemoryRo2\ReadMemoryRo2\obj\Debug\ReadMemoryRo2.exe
+D:\Native\test\ReadMemoryRo2\ReadMemoryRo2\obj\Debug\ReadMemoryRo2.pdb

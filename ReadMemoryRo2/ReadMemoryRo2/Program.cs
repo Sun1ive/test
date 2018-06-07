@@ -14,6 +14,7 @@ namespace ReadMemoryRo2
 
         [DllImport("kernel32.dll")]
         public static extern bool ReadProcessMemory(int hProcess, int lpBaseAddress, byte[] lpBuffer, int dwSize, ref int lpNumberOfBytesRead);
+
         [Flags]
         public enum ProcessAccessType
         {
@@ -31,27 +32,31 @@ namespace ReadMemoryRo2
             PROCESS_QUERY_LIMITED_INFORMATION = (0x1000)
         }
 
-        const int Silence = 0x00E6A85C;
+       // const int Silence = 0x00E6A85C;
 
         static void Main(string[] args)
         {
             ProcessAccessType access = ProcessAccessType.PROCESS_QUERY_INFORMATION | ProcessAccessType.PROCESS_VM_READ | ProcessAccessType.PROCESS_VM_WRITE | ProcessAccessType.PROCESS_VM_OPERATION;
+
             Process process = Process.GetProcessesByName("revoexe").ToList().FirstOrDefault();
-            Console.WriteLine(process);
+            Console.WriteLine("Process: " + process);
             if (process == null)
             {
                 Console.WriteLine("Error");
-                throw new Exception("Error has occured, looks like there no procces with this name");
+                throw new Exception("Error has occured, looks like there no process with this name");
             }
 
-
             IntPtr processHandle = OpenProcess((int)access, false, process.Id);
-            Console.WriteLine(processHandle);
+
+            //SendMessage(process, 0x000C, 0, "HELLO WORLD");
+
+            Console.WriteLine("Process pointer: " + processHandle);
 
             const int MaxHpAddress = 0x00E6E838;
             const int CurHpAddress = 0x00E6E834;
             const int MaxSpAddress = 0x00E6E840;
             const int CurSpAddress = 0x00E6E83C;
+
 
             int bytesRead = 0;
 
@@ -60,8 +65,6 @@ namespace ReadMemoryRo2
             byte[] bufferCurSp = new byte[4];
             byte[] bufferMaxSp = new byte[4];
 
-            //ReadProcessMemory((int)processHandle, 0x00E6E834, buffer, buffer.Length, ref bytesRead);
-            //bool isSuccess = ReadProcessMemory((int)processHandle, HP, buffer, buffer.Length, ref bytesRead);
             ReadProcessMemory((int)processHandle, MaxHpAddress, bufferMaxHp, bufferMaxHp.Length, ref bytesRead);
             ReadProcessMemory((int)processHandle, CurHpAddress, bufferCurHp, bufferCurHp.Length, ref bytesRead);
             ReadProcessMemory((int)processHandle, MaxSpAddress, bufferMaxSp, bufferMaxSp.Length, ref bytesRead);
@@ -71,6 +74,7 @@ namespace ReadMemoryRo2
             int MaxHpValue = 0;
             int MaxSpValue = 0;
             int CurSpValue = 0;
+
 
             MaxHpValue = BitConverter.ToInt32(bufferMaxHp, 0);
             CurHpValue = BitConverter.ToInt32(bufferCurHp, 0);
@@ -82,11 +86,12 @@ namespace ReadMemoryRo2
             Console.WriteLine("Cur Sp int: {0}", CurSpValue);
             Console.WriteLine("Max Sp int: {0}", MaxSpValue);
 
+             while (CurHpValue < MaxHpValue) {
+              Console.WriteLine("Current hp less than maxhp");
+              Thread.Sleep(2000);
+             }
 
-            Console.WriteLine(bytesRead.ToString() + " bytes");
-
-
-            Console.ReadLine();
+            Console.ReadKey();
         }
     }
 }
